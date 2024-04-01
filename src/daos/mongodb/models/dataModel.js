@@ -2,11 +2,15 @@ import mongoose from 'mongoose';
 
 const { Schema, model } = mongoose;
 
-const dataSchema = new Schema({
-    cliente: { type: String, required: true },
-    patterns_auto_admisorio: [String],
-    patterns_escrito_tutela: [String] 
+const patternSchema = new Schema({
+    patterns: [String],
+    labels: Object
 });
 
-export const DataModel = model('patterns-clientes', dataSchema);
-// export const DataModel = model('epm-tutelas', dataSchema);
+const dataSchema = new Schema({
+    cliente: { type: String, required: true },
+    auto_admisorio: patternSchema,
+    escrito_tutela: patternSchema
+});
+
+export const DataModel = model('patterns-clientes-prueba', dataSchema);
