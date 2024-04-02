@@ -1,7 +1,7 @@
 import { DataModel } from '../daos/mongodb/models/dataModel.js';
 
 
-export async function createDataCliente(data) {
+export async function createCliente(data) {
     const newData = {
         cliente: data.cliente,
         auto_admisorio: {

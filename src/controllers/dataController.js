@@ -1,8 +1,8 @@
 import * as dataService from '../services/dataService.js';
 
-export async function createDataCliente(req, res) {
+export async function createCliente(req, res) {
     try {
-        const data = await dataService.createDataCliente(req.body);
+        const data = await dataService.createCliente(req.body);
         res.json(data);
     } catch (error) {
         res.status(500).json({ message: error.message });
