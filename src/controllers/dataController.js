@@ -29,6 +29,19 @@ export async function getDataByCliente(req, res) {
     }
 }
 
+export async function getCliente(req, res) {
+    try {
+        const { cliente } = req.params;
+        const data = await dataService.getCliente(cliente);
+        if (!data) {
+            return res.status(404).json({ message: 'Cliente no encontrado' });
+        }
+        res.json(data);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+}
+
 export async function updateDataByCliente(req, res) {
     try {
         const { cliente, label } = req.params;

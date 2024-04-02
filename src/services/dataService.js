@@ -22,6 +22,10 @@ export async function createDataByCliente(data, label) {
     return await DataModel.create(newData);
 }
 
+export async function getCliente(cliente) {
+    return await DataModel.findOne({ cliente }, { _id: 0 });
+}
+
 export async function getDataByCliente(cliente, label) {
     return await DataModel.findOne({ cliente }, { [label]: 1, _id: 0 });
 }
