@@ -29,29 +29,53 @@ export async function getDataByCliente(cliente, label) {
 export async function updateDataByCliente(cliente, label, newData) {
     const { patterns, labels, delete_pattern } = newData;
 
-    const updates = {};
-
+    // Actualizar patterns
+    const patternUpdates = {};
     if (delete_pattern) {
-        if (patterns) {
-            if (Array.isArray(patterns)) {
-                updates['$pull'] = { [`${label}.patterns`]: { $in: patterns } };
-            } else {
-                updates['$pull'] = { [`${label}.patterns`]: patterns };
-            }
+        if (Array.isArray(patterns)) {
+            patternUpdates['$pullAll'] = { [`${label}.patterns`]: patterns };
+        } else {
+            patternUpdates['$pull'] = { [`${label}.patterns`]: patterns };
         }
     } else {
         if (patterns && patterns.length > 0) {
-            updates['$push'] = { [`${label}.patterns`]: { $each: patterns } };
-        }
-
-        if (labels) {
-            updates['$set'] = { [`${label}.labels`]: labels };
+            patternUpdates['$push'] = { [`${label}.patterns`]: { $each: patterns } };
         }
     }
+
+    // Actualizar labels
+    const labelUpdates = {};
+    if (labels) {
+        const labelsToSet = {};
+        const labelsToUnset = {};
+
+        Object.entries(labels).forEach(([key, value]) => {
+            if (value === null) {
+                labelsToUnset[`${label}.labels.${key}`] = 1;
+            } else if (typeof value === 'object' && value.delete_label) {
+                labelsToUnset[`${label}.labels.${key}`] = 1;
+            } else {
+                labelsToSet[`${label}.labels.${key}`] = value;
+            }
+        });
+
+        if (Object.keys(labelsToSet).length > 0) {
+            labelUpdates['$set'] = labelsToSet;
+        }
+        if (Object.keys(labelsToUnset).length > 0) {
+            labelUpdates['$unset'] = labelsToUnset;
+        }
+    }
+
+    const updates = { ...patternUpdates, ...labelUpdates };
 
     return await DataModel.findOneAndUpdate({ cliente }, updates, { new: true });
 }
 
 export async function deleteDataByCliente(cliente, label) {
     return await DataModel.findOneAndUpdate({ cliente }, { $unset: { [label]: 1 } }, { new: true });
+}
+
+export async function deleteCliente(cliente) {
+    return await DataModel.findOneAndDelete({ cliente });
 }

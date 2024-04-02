@@ -42,8 +42,21 @@ export async function updateDataByCliente(req, res) {
 export async function deleteDataByCliente(req, res) {
     try {
         const { cliente, label } = req.params;
-        await dataService.deleteDataByCliente(cliente, label);
-        res.json({ message: 'Data deleted successfully' });
+        const deleteData = await dataService.deleteDataByCliente(cliente, label);
+        res.json(deleteData);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+}
+
+export async function deleteCliente(req, res) {
+    try {
+        const { cliente } = req.params;
+        const deletedCliente = await dataService.deleteCliente(cliente);
+        if (!deletedCliente) {
+            return res.status(404).json({ message: 'Cliente no encontrado' });
+        }
+        res.json({ message: 'Cliente eliminado exitosamente' });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
