@@ -20,4 +20,7 @@ mongoose.connect(connectionString, { useNewUrlParser: true, useUnifiedTopology: 
     .then(() => {
         app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
     })
-    .catch(error => console.error('Error connecting to database:', error));
+    .catch(error => {
+        const err = new Error(error.message);
+        console.error('Error connecting to database:', err);
+    });
